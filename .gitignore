@@ -1,4 +1,4 @@
-venv/
-runs/
-__pycache__/
-yolo26n.pt
+backend/venv/
+backend/runs/
+backend/__pycache__/
+backend/yolo26n.pt

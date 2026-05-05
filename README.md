@@ -1,34 +1,55 @@
-# Object-detection-model
-The project "Object Detection Using Images" focuses on identifying and classifying objects within images using a pre-trained model. It utilizes the YOLOv3 (You Only Look Once) algorithm, which is known for its speed and accuracy in real-time object detection. The files `yolov3.weights`, `yolov3.cfg`, and `coco.names` are central to this project:
+# YOLOv26 Object Detection Dashboard
 
-- `yolov3.weights`: Contains the pre-trained weights of the YOLOv3 model, which have been trained on the COCO dataset.
-- `yolov3.cfg`: The configuration file that defines the architecture of the YOLOv3 model, including layers, filters, and other hyperparameters.
-- `coco.names`: A file listing the names of the object classes that the model can detect, such as 'person', 'car', 'dog', etc.
+A real-time object detection application featuring a Python (Flask) backend and a React (Vite) frontend.
 
-# To download these files Using Terminal (Linux/Mac) or Command Prompt (Windows)
+## Project Structure
 
-# Download yolov3.weights
-curl -O https://pjreddie.com/media/files/yolov3.weights
+- `backend/`: Python backend using Flask and Ultralytics YOLOv26.
+  - `app.py`: Flask server for real-time video streaming.
+  - `object_detection.py`: Core detection logic.
+  - `train.py`: Script for training custom models.
+  - `yolo26n.pt`: Pre-trained YOLOv26 model weights.
+  - `requirements.txt`: Python dependencies.
+- `frontend/`: React frontend built with Vite.
+  - `src/`: React components and logic.
 
-# Download yolov3.cfg
-curl -O https://raw.githubusercontent.com/pjreddie/darknet/master/cfg/yolov3.cfg
+## Getting Started
 
-# Download coco.names
-curl -O https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names
-After downloading these files, make sure they are in the correct directory, and you can proceed with your YOLOv3 implementation.
+### Backend Setup
 
-# Outcomes:
-Object Detection: The primary outcome is the ability to detect and classify multiple objects within an image. The model outputs the detected objects' names, confidence scores, and bounding boxes (the coordinates defining the area of the object in the image).
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the backend server:
+   ```bash
+   python app.py
+   ```
 
-Real-Time Processing: With the YOLOv3 algorithm, the project can perform object detection in real-time, making it suitable for applications where speed is critical.
+### Frontend Setup
 
-Accuracy and Precision: The model provides high accuracy in detecting objects, especially for classes defined in the coco.names file. It balances speed and precision, identifying objects with minimal false positives and false negatives.
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-Scalability: The project is scalable and can be adapted for different datasets by retraining the model with specific classes relevant to a particular application or industry.
+## Usage
 
-The project typically involves loading these files into a machine learning framework, running object detection on a set of images, and outputting the detected objects along with their bounding boxes and class labels.
-
-
-
-
-python object_detection.py --model runs/detect/custom_yolo26/weights/best.pt
+Once both servers are running, open your browser to the URL provided by Vite (usually `http://localhost:5173`). The dashboard will display a real-time video feed from your webcam with object detection overlays.
