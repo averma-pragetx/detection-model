@@ -1,0 +1,11 @@
+# YOLOv26 Dataset Configuration
+
+# Paths to your dataset (Relative to this file or Absolute)
+path: C:/Users/PragetX Softwares/OneDrive/Desktop/dataset  # Dataset root directory
+train: images/train  # Train images
+val: images/val      # Validation images
+test: images/test    # (Optional) Test images
+
+# Classes
+nc: 10  # Number of classes
+names: ["Hardhat", "Mask", "NO-Hardhat", "NO-Mask", "NO-Safety Vest", "Person", "Safety Cone", "Safety Vest", "machinery", "vehicle"]  # List of class names

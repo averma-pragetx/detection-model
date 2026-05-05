@@ -27,3 +27,8 @@ Accuracy and Precision: The model provides high accuracy in detecting objects, e
 Scalability: The project is scalable and can be adapted for different datasets by retraining the model with specific classes relevant to a particular application or industry.
 
 The project typically involves loading these files into a machine learning framework, running object detection on a set of images, and outputting the detected objects along with their bounding boxes and class labels.
+
+
+
+
+python object_detection.py --model runs/detect/custom_yolo26/weights/best.pt
