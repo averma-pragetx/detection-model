@@ -1,4 +1,4 @@
 backend/venv/
-backend/runs/
 backend/__pycache__/
 backend/yolo26n.pt
+backend/runs/detect/custom_yolo26/metrics

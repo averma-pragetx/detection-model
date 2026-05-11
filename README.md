@@ -52,4 +52,4 @@ A real-time object detection application featuring a Python (Flask) backend and 
 
 ## Usage
 
-Once both servers are running, open your browser to the URL provided by Vite (usually `http://localhost:5173`). The dashboard will display a real-time video feed from your webcam with object detection overlays.
+Once both servers are running, open your browser to the URL provided by Vite ( `http://localhost:9001`). The dashboard will display a real-time video feed from your webcam with object detection overlays.

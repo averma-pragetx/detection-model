@@ -23,29 +23,27 @@ function App() {
       }
     };
 
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/stats');
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
-        }
-      } catch (error) {
-        // Ignore stats fetch errors if backend goes down
-      }
-    };
-
     checkStatus();
-    fetchStats();
     
     // Status can be checked every 5s
     const statusInterval = setInterval(checkStatus, 5000);
-    // Stats update faster for real-time feel (every 1s)
-    const statsInterval = setInterval(fetchStats, 1000);
+    
+    // SSE for real-time detections
+    const eventSource = new EventSource('http://localhost:5000/detections');
+    
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setStats(data);
+    };
+
+    eventSource.onerror = () => {
+      console.error("SSE connection failed.");
+      eventSource.close();
+    };
     
     return () => {
       clearInterval(statusInterval);
-      clearInterval(statsInterval);
+      eventSource.close();
     };
   }, []);
 
@@ -62,32 +60,32 @@ function App() {
             {isBackendOnline ? 'System Online' : 'System Offline'}
           </div>
           <div className="controls" style={{ marginTop: 0 }}>
-              {isStreaming ? (
-                <button 
-                  onClick={() => setIsStreaming(false)} 
-                  style={{ width: '100%', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#ef4444', borderRadius: '9999px'}}
-                >
-                  Stop Streaming
-                </button>
-              ) : (
-                <button 
-                  onClick={() => setIsStreaming(true)} 
-                  style={{ width: '100%', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.5)', color: '#10b981', borderRadius: '9999px' }}
-                >
-                  Start Streaming
-                </button>
-              )}
+            {isStreaming ? (
+              <button
+                onClick={() => setIsStreaming(false)}
+                style={{ width: '100%', background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#ef4444', borderRadius: '9999px' }}
+              >
+                Stop Streaming
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsStreaming(true)}
+                style={{ width: '100%', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.5)', color: '#10b981', borderRadius: '9999px' }}
+              >
+                Start Streaming
+              </button>
+            )}
           </div>
         </div>
       </header>
-      
+
 
       <main className="main-content">
         <div className="video-container">
           {isBackendOnline && isStreaming ? (
-            <img 
-              src="http://localhost:5000/video_feed" 
-              alt="YOLO Video Stream" 
+            <img
+              src="http://localhost:5000/video_feed"
+              alt="YOLO Video Stream"
               className="video-stream"
               onError={() => setIsBackendOnline(false)}
             />
@@ -110,7 +108,7 @@ function App() {
             <div className="stat-value">{isBackendOnline ? modelName : '---'}</div>
             <div className="stat-label" style={{ marginTop: '0.5rem' }}>Ultralytics Engine</div>
           </div>
-{/*           
+          {/*           
           <div className="card">
             <h3>Current Detections</h3>
             <div className="stat-value" style={{ color: stats.detections_count > 0 ? '#4facfe' : '#fff' }}>
@@ -122,11 +120,9 @@ function App() {
           <div className="card">
             <h3>Detections</h3>
             <div className="stat-value" style={{ fontSize: '1.25rem' }}>
-              {isBackendOnline && stats.unique_classes.length > 0 
-                ? stats.unique_classes.join(', ') 
-                : 'None'}
+              {isBackendOnline ? (stats.summary || 'None') : 'None'}
             </div>
-            <div className="stat-label" style={{ marginTop: '0.5rem' }}>Current object types</div>
+            <div className="stat-label" style={{ marginTop: '0.5rem' }}>Real-time breakdown</div>
           </div>
 
           <div className="card">

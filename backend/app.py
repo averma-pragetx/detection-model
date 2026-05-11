@@ -1,4 +1,5 @@
 import argparse
+import json
 from flask import Flask, Response, jsonify
 from flask_cors import CORS
 import cv2
@@ -8,7 +9,7 @@ import time
 from object_detection import load_yolo, draw_custom_box
 
 parser = argparse.ArgumentParser(description="YOLO Flask Backend")
-parser.add_argument("--model", type=str, default="yolo26n.pt", help="Path to YOLO model")
+parser.add_argument("--model", type=str, default="runs/detect/custom_yolo26/weights/best.pt", help="Path to YOLO model")
 args = parser.parse_args()
 
 app = Flask(__name__)
@@ -106,6 +107,46 @@ def stats():
         "detections_count": len(current_boxes),
         "unique_classes": list(unique_classes)
     })
+
+def detections_stream():
+    """
+    Generator that yields detection statistics as Server-Sent Events.
+    """
+    last_sent_data = None
+    while True:
+        with lock:
+            current_boxes = list(latest_boxes)
+        
+        # Create a frequency map of detections
+        counts = {}
+        for _, label, _, _ in current_boxes:
+            counts[label] = counts.get(label, 0) + 1
+        
+        # Create a formatted summary string similar to console output
+        summary_parts = []
+        for label in sorted(counts.keys()):
+            count = counts[label]
+            summary_parts.append(f"{count} {label}{'s' if count > 1 else ''}")
+        
+        summary = ", ".join(summary_parts)
+        
+        current_data = {
+            "detections_count": len(current_boxes),
+            "summary": summary if summary else "No detections",
+            "unique_classes": sorted(list(counts.keys())),
+            "all_detections": [{"label": l, "confidence": round(c, 2)} for _, l, c, _ in current_boxes]
+        }
+        
+        # Only send if data has changed to reduce bandwidth
+        if current_data != last_sent_data:
+            yield f"data: {json.dumps(current_data)}\n\n"
+            last_sent_data = current_data
+            
+        time.sleep(0.1)  # 10Hz update rate
+
+@app.route('/detections')
+def detections():
+    return Response(detections_stream(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, threaded=True)
